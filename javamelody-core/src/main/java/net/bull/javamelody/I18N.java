@@ -25,6 +25,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
 
@@ -103,7 +104,11 @@ final class I18N {
 	 * @return String
 	 */
 	static String getString(String key) {
-		return getResourceBundle().getString(key);
+		try {
+			return getResourceBundle().getString(key);
+		} catch (MissingResourceException e) {
+			return null;
+		}
 	}
 
 	/**

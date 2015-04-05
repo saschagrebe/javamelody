@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.bull.javamelody.Counter.CounterRequestContextComparator;
@@ -318,6 +319,7 @@ class Collector { // NOPMD
 			// si pas d'informations, on ne met pas 0 : on ne met rien
 			if (!javaInformationsList.isEmpty()) {
 				collectJavaInformations(javaInformationsList);
+				collectJmxInformations(javaInformationsList);
 				collectOtherJavaInformations(javaInformationsList);
 				collectTomcatInformations(javaInformationsList);
 			}
@@ -381,6 +383,28 @@ class Collector { // NOPMD
 		}
 		collectJRobinValues(usedMemory, processesCpuTimeMillis, availableProcessors, sessionCount,
 				activeThreadCount, activeConnectionCount, usedConnectionCount);
+	}
+
+	private void collectJmxInformations(List<JavaInformations> javaInformationsList)
+			throws IOException {
+		Map<JmxConfig, Double> jmxValues = new HashMap<JmxConfig, Double>();
+
+		for (JavaInformations nextJavaInformations : javaInformationsList) {
+			for (final JmxInformation nextJmxInformation : nextJavaInformations
+					.getJmxInformations()) {
+				final JmxConfig key = nextJmxInformation.getJmxConfig();
+				final Double currentValue;
+				if (jmxValues.containsKey(key)) {
+					currentValue = jmxValues.get(key);
+				} else {
+					currentValue = Double.valueOf(0);
+				}
+
+				jmxValues.put(key, add(nextJmxInformation.getValue(), currentValue));
+			}
+
+			collectJmxValues(jmxValues);
+		}
 	}
 
 	private void collectOtherJavaInformations(List<JavaInformations> javaInformationsList)
@@ -528,6 +552,13 @@ class Collector { // NOPMD
 		if (getCounterByName(Counter.BUILDS_COUNTER_NAME) != null) {
 			getCounterJRobin("runningBuilds").addValue(JdbcWrapper.getRunningBuildCount());
 			getCounterJRobin("buildQueueLength").addValue(JdbcWrapper.getBuildQueueLength());
+		}
+	}
+
+	private void collectJmxValues(Map<JmxConfig, Double> jmxValues) throws IOException {
+		for (Entry<JmxConfig, Double> nextJmxValue : jmxValues.entrySet()) {
+			getCounterJRobin(nextJmxValue.getKey().getJRobinCounterName(),
+					nextJmxValue.getKey().getAttributeName()).addValue(nextJmxValue.getValue());
 		}
 	}
 
@@ -836,6 +867,15 @@ class Collector { // NOPMD
 		JRobin jrobin = counterJRobins.get(name);
 		if (jrobin == null) {
 			jrobin = JRobin.createInstance(getApplication(), name, null);
+			counterJRobins.put(name, jrobin);
+		}
+		return jrobin;
+	}
+
+	private JRobin getCounterJRobin(String name, String requestName) throws IOException {
+		JRobin jrobin = counterJRobins.get(name);
+		if (jrobin == null) {
+			jrobin = JRobin.createInstance(getApplication(), name, requestName);
 			counterJRobins.put(name, jrobin);
 		}
 		return jrobin;

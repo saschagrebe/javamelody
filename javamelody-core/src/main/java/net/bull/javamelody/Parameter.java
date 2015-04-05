@@ -298,7 +298,9 @@ public enum Parameter {
 	 * URL http du fichier jar javamelody-swing (null par défaut : le fichier sera téléchargé depuis http://javamelody.googlecode.com selon la version). <br/>
 	 * Ce paramètre est surtout utile quand les utilisateurs n'ont pas accès à Internet pour télécharger sur googlecode.
 	 */
-	JAVAMELODY_SWING_URL("javamelody-swing-url");
+	JAVAMELODY_SWING_URL("javamelody-swing-url"),
+
+	JMX_CONFIG("jmx-config");
 
 	private final String code;
 

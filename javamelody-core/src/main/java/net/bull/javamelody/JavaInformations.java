@@ -55,6 +55,7 @@ class JavaInformations implements Serializable { // NOPMD
 	private final MemoryInformations memoryInformations;
 	@SuppressWarnings("all")
 	private final List<TomcatInformations> tomcatInformationsList;
+	private final List<JmxInformation> jmxInformations;
 	private final int sessionCount;
 	private final long sessionAgeSum;
 	private final int activeThreadCount;
@@ -133,6 +134,7 @@ class JavaInformations implements Serializable { // NOPMD
 		super();
 		memoryInformations = new MemoryInformations();
 		tomcatInformationsList = TomcatInformations.buildTomcatInformationsList();
+		jmxInformations = JmxInformations.buildJmxInformations();
 		sessionCount = SessionListener.getSessionCount();
 		sessionAgeSum = SessionListener.getSessionAgeSum();
 		activeThreadCount = JdbcWrapper.getActiveThreadCount();
@@ -483,6 +485,10 @@ class JavaInformations implements Serializable { // NOPMD
 
 	List<TomcatInformations> getTomcatInformationsList() {
 		return tomcatInformationsList;
+	}
+
+	List<JmxInformation> getJmxInformations() {
+		return jmxInformations;
 	}
 
 	int getSessionCount() {
