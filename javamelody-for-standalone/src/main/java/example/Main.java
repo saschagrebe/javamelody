@@ -17,7 +17,7 @@ public class Main {
 	 */
 	public static void main(String[] args) throws Exception {
 		// javamelody parameters (optional),
-		final Map<Parameter, String> parameters = new HashMap<>();
+		final Map<Parameter, String> parameters = new HashMap<Parameter, String>();
 		// to add basic auth:
 		// parameters.put(Parameter.AUTHORIZED_USERS, "admin:pwd");
 
