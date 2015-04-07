@@ -134,7 +134,7 @@ class JavaInformations implements Serializable { // NOPMD
 		super();
 		memoryInformations = new MemoryInformations();
 		tomcatInformationsList = TomcatInformations.buildTomcatInformationsList();
-		jmxInformations = JmxInformations.buildJmxInformations();
+		jmxInformations = JmxInformations.buildJmxInformations(servletContext);
 		sessionCount = SessionListener.getSessionCount();
 		sessionAgeSum = SessionListener.getSessionAgeSum();
 		activeThreadCount = JdbcWrapper.getActiveThreadCount();

@@ -387,12 +387,12 @@ class Collector { // NOPMD
 
 	private void collectJmxInformations(List<JavaInformations> javaInformationsList)
 			throws IOException {
-		Map<JmxConfig, Double> jmxValues = new HashMap<JmxConfig, Double>();
+		Map<String, Double> jmxValues = new HashMap<String, Double>();
 
 		for (JavaInformations nextJavaInformations : javaInformationsList) {
 			for (final JmxInformation nextJmxInformation : nextJavaInformations
 					.getJmxInformations()) {
-				final JmxConfig key = nextJmxInformation.getJmxConfig();
+				final String key = nextJmxInformation.getName();
 				final Double currentValue;
 				if (jmxValues.containsKey(key)) {
 					currentValue = jmxValues.get(key);
@@ -400,7 +400,7 @@ class Collector { // NOPMD
 					currentValue = Double.valueOf(0);
 				}
 
-				jmxValues.put(key, add(nextJmxInformation.getValue(), currentValue));
+				jmxValues.put(key, add(nextJmxInformation.getValue().doubleValue(), currentValue));
 			}
 
 			collectJmxValues(jmxValues);
@@ -555,10 +555,9 @@ class Collector { // NOPMD
 		}
 	}
 
-	private void collectJmxValues(Map<JmxConfig, Double> jmxValues) throws IOException {
-		for (Entry<JmxConfig, Double> nextJmxValue : jmxValues.entrySet()) {
-			getCounterJRobin(nextJmxValue.getKey().getJRobinCounterName(),
-					nextJmxValue.getKey().getAttributeName()).addValue(nextJmxValue.getValue());
+	private void collectJmxValues(Map<String, Double> jmxValues) throws IOException {
+		for (Entry<String, Double> nextJmxValue : jmxValues.entrySet()) {
+			getCounterJRobin(nextJmxValue.getKey()).addValue(nextJmxValue.getValue());
 		}
 	}
 
@@ -867,15 +866,6 @@ class Collector { // NOPMD
 		JRobin jrobin = counterJRobins.get(name);
 		if (jrobin == null) {
 			jrobin = JRobin.createInstance(getApplication(), name, null);
-			counterJRobins.put(name, jrobin);
-		}
-		return jrobin;
-	}
-
-	private JRobin getCounterJRobin(String name, String requestName) throws IOException {
-		JRobin jrobin = counterJRobins.get(name);
-		if (jrobin == null) {
-			jrobin = JRobin.createInstance(getApplication(), name, requestName);
 			counterJRobins.put(name, jrobin);
 		}
 		return jrobin;

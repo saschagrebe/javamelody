@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<!-- Root Config Element -->
+	<xs:element name="jmxConfig">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="object" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<!-- JMX Object -->
+	<xs:element name="object">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="jmxValue" minOccurs="1" maxOccurs="unbounded" />
+			</xs:sequence>
+
+			<!-- object name -->
+			<xs:attribute name="name" use="required" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
+
+	<!-- jmx value -->
+	<xs:element name="jmxValue" >
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="name" minOccurs="1" maxOccurs="1" type="xs:string" />
+				<xs:element name="label" minOccurs="1" maxOccurs="1" type="xs:string" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+</xs:schema>

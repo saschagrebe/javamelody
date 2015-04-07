@@ -24,7 +24,9 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.MessageFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
@@ -46,6 +48,8 @@ final class I18N {
 	private static final Locale ROOT_LOCALE = Locale.ROOT;
 
 	private static final Locale FIXED_LOCALE = getFixedLocale();
+
+	private static final Map<String, String> CUSTOM_TRANSLATIONS = new HashMap<String, String>();
 
 	private I18N() {
 		super();
@@ -107,8 +111,13 @@ final class I18N {
 		try {
 			return getResourceBundle().getString(key);
 		} catch (MissingResourceException e) {
-			return null;
+			// as fall back lookup in custom translation map
+			return CUSTOM_TRANSLATIONS.get(key);
 		}
+	}
+
+	static void addTranslation(String key, String value) {
+		CUSTOM_TRANSLATIONS.put(key, value);
 	}
 
 	/**

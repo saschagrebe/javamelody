@@ -6,30 +6,22 @@ class JmxInformation implements Serializable {
 
 	private static final long serialVersionUID = 4581224399754365782L;
 
-	private JmxConfig jmxConfig;
+	private final String name;
 
-	private double value;
+	private final Number value;
 
-	public JmxInformation(JmxConfig jmxConfig, double value) {
+	public JmxInformation(String name, Number value) {
 		super();
-		this.jmxConfig = jmxConfig;
+		this.name = name;
 		this.value = value;
 	}
 
-	public double getValue() {
+	public Number getValue() {
 		return value;
 	}
 
-	public void setValue(double value) {
-		this.value = value;
-	}
-
-	public JmxConfig getJmxConfig() {
-		return jmxConfig;
-	}
-
-	public void setJmxConfig(JmxConfig jmxConfig) {
-		this.jmxConfig = jmxConfig;
+	public String getName() {
+		return name;
 	}
 
 }
