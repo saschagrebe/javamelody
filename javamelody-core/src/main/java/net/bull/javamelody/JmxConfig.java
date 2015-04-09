@@ -5,9 +5,14 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * La configuration de JMX.
+ * @author Sascha Grebe
+ */
 @XmlRootElement(name = "jmxConfig")
 class JmxConfig {
 
+	// the jmx objects
 	private List<JmxObject> object = new ArrayList<JmxObject>();
 
 	public List<JmxObject> getObject() {

@@ -49,6 +49,7 @@ final class I18N {
 
 	private static final Locale FIXED_LOCALE = getFixedLocale();
 
+	// some custom translations used for example by the JMX feature
 	private static final Map<String, String> CUSTOM_TRANSLATIONS = new HashMap<String, String>();
 
 	private I18N() {
@@ -116,6 +117,11 @@ final class I18N {
 		}
 	}
 
+	/**
+	 * Ajoute une traduction personnalisé ajouté.
+	 * @param key clé d'un libellé dans les fichiers de traduction
+	 * @param value la traduction
+	 */
 	static void addTranslation(String key, String value) {
 		CUSTOM_TRANSLATIONS.put(key, value);
 	}

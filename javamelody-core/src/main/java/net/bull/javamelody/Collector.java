@@ -387,8 +387,9 @@ class Collector { // NOPMD
 
 	private void collectJmxInformations(List<JavaInformations> javaInformationsList)
 			throws IOException {
-		Map<String, Double> jmxValues = new HashMap<String, Double>();
+		final Map<String, Double> jmxValues = new HashMap<String, Double>();
 
+		// aggregate the collected jmx values and add them to jrobin
 		for (JavaInformations nextJavaInformations : javaInformationsList) {
 			for (final JmxInformation nextJmxInformation : nextJavaInformations
 					.getJmxInformations()) {

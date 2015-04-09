@@ -300,6 +300,9 @@ public enum Parameter {
 	 */
 	JAVAMELODY_SWING_URL("javamelody-swing-url"),
 
+	/**
+	 * Configuration URL JMX. Par exemple /WEB-INF/jmx-config.xml. Le fichier doit correspondre au schéma XSD jmx-config.xsd.
+	 */
 	JMX_CONFIG("jmx-config");
 
 	private final String code;
