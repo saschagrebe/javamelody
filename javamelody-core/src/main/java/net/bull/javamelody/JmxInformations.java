@@ -115,7 +115,8 @@ class JmxInformations {
 		}
 		if (nextValue.getAttribute() == null || Boolean.FALSE.equals(nextValue.getAttribute())) {
 			try {
-				final Object value = beanServer.invoke(objectName, nextValue.getName(), null, null);
+				final Object value = beanServer.invoke(objectName, nextValue.getName(),
+						new Object[] {}, null);
 				nextValue.setAttribute(false);
 
 				return value;
