@@ -21,7 +21,7 @@ import javax.xml.bind.Unmarshaller;
 class JmxInformations {
 
 	// caching the loaded jmx config 
-	private static JmxConfig JMX_CONFIG = null;
+	static JmxConfig JMX_CONFIG = null;
 
 	private static JmxConfig getJmxConfig(ServletContext servletContext) {
 		if (JMX_CONFIG == null) {
@@ -71,23 +71,26 @@ class JmxInformations {
 	 */
 	static List<JmxInformation> buildJmxInformations(ServletContext servletContext) {
 		final JmxConfig config = getJmxConfig(servletContext);
-		final MBeanServer beanServer = MBeans.getPlatformMBeanServer();
-		final List<JmxInformation> information = new ArrayList<JmxInformation>();
-		for (JmxObject nextObject : config.getObject()) {
-			for (JmxValue nextValue : nextObject.getJmxValue()) {
-				try {
-					final Object value = loadValue(beanServer, nextObject, nextValue);
-					if (value instanceof Number) {
-						final String counterName = counterName(nextObject, nextValue);
-						final Number number = (Number) value;
 
-						information.add(new JmxInformation(counterName, number));
+		final List<JmxInformation> information = new ArrayList<JmxInformation>();
+		if (config != null) {
+			final MBeanServer beanServer = MBeans.getPlatformMBeanServer();
+			for (JmxObject nextObject : config.getObject()) {
+				for (JmxValue nextValue : nextObject.getJmxValue()) {
+					try {
+						final Object value = loadValue(beanServer, nextObject, nextValue);
+						if (value instanceof Number) {
+							final String counterName = counterName(nextObject, nextValue);
+							final Number number = (Number) value;
+
+							information.add(new JmxInformation(counterName, number));
+						}
+
+					} catch (MalformedObjectNameException e) {
+						LOG.warn("Could not collect jmx bean info", e);
 					}
 
-				} catch (MalformedObjectNameException e) {
-					LOG.warn("Could not collect jmx bean info", e);
 				}
-
 			}
 		}
 
@@ -133,7 +136,7 @@ class JmxInformations {
 		return null;
 	}
 
-	private static String counterName(JmxObject nextObject, JmxValue nextValue) {
+	static String counterName(JmxObject nextObject, JmxValue nextValue) {
 		// need to strip all special signs because jrobin files are stored on file system and not every sign is allowed
 		return stripSpecialChars(nextObject.getName()) + "_"
 				+ stripSpecialChars(nextValue.getName());

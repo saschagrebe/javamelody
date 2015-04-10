@@ -246,6 +246,43 @@ public class TestCollector {
 		}
 	}
 
+	/** Test.
+	 * @throws Exception e */
+	@Test
+	public void testCollectJMXInformations() throws Exception {
+		final MBeanServer mBeanServer = MBeans.getPlatformMBeanServer();
+		final List<ObjectName> mBeans = new ArrayList<ObjectName>();
+		try {
+			final String objectName = "JavaMelody:type=TestMBean";
+			mBeans.add(mBeanServer.registerMBean(new TestMBean(), new ObjectName(objectName))
+					.getObjectName());
+			final JmxValue value = new JmxValue();
+			value.setLabel("Test");
+			value.setName("Value");
+
+			final JmxObject jmxObject = new JmxObject();
+			jmxObject.setName(objectName);
+			jmxObject.getJmxValue().add(value);
+
+			JmxInformations.JMX_CONFIG = new JmxConfig();
+			JmxInformations.JMX_CONFIG.getObject().add(jmxObject);
+
+			final Collector collector = new Collector(TEST,
+					Arrays.asList(new Counter("http", null)));
+			collector.collectWithoutErrors(Collections.singletonList(new JavaInformations(null,
+					true)));
+
+			final JRobin counter = collector.getJRobin(JmxInformations
+					.counterName(jmxObject, value));
+			assertEquals(11.0, counter.getLastValue(), 0.0);
+		} finally {
+			JmxInformations.JMX_CONFIG = null;
+			for (final ObjectName registeredMBean : mBeans) {
+				mBeanServer.unregisterMBean(registeredMBean);
+			}
+		}
+	}
+
 	/** Test. */
 	@Test
 	public void testRemoveRequest() {
