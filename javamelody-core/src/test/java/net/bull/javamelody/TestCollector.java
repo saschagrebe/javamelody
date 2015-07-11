@@ -272,8 +272,7 @@ public class TestCollector {
 			collector.collectWithoutErrors(Collections.singletonList(new JavaInformations(null,
 					true)));
 
-			final JRobin counter = collector.getJRobin(JmxInformations
-					.counterName(jmxObject, value));
+			final JRobin counter = collector.getJRobin(value.getCounterName(jmxObject.getName()));
 			assertEquals(11.0, counter.getLastValue(), 0.0);
 		} finally {
 			JmxInformations.JMX_CONFIG = null;

@@ -17,8 +17,6 @@
  */
 package net.bull.javamelody;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 /**
  * Les valeurs JMX configurées qui doivent être collectées.
  * @author Sascha Grebe
@@ -31,7 +29,8 @@ class JmxValue {
 	// the custom label used in the graph
 	private String label;
 
-	private Boolean attribute = null;
+	// the calculated counter name
+	private String counterName = null;
 
 	public String getName() {
 		return name;
@@ -49,18 +48,25 @@ class JmxValue {
 		this.label = label;
 	}
 
+	public String getCounterName(String mbeanName) {
+		// need to strip all special signs because jrobin files are stored on file system and not every sign is allowed
+		if (counterName == null) {
+			this.counterName = stripSpecialChars(mbeanName) + "_" + stripSpecialChars(name);
+		}
+
+		return counterName;
+	}
+
+	private String stripSpecialChars(String strValue) {
+		if (strValue == null) {
+			return "null";
+		}
+		return strValue.replace(".", "_").replaceAll("[^a-zA-Z0-9_]+", "");
+	}
+
 	@Override
 	public String toString() {
 		return "JmxValue [name=" + name + ", label=" + label + "]";
-	}
-
-	@XmlTransient
-	public Boolean getAttribute() {
-		return attribute;
-	}
-
-	public void setAttribute(Boolean attribute) {
-		this.attribute = attribute;
 	}
 
 }

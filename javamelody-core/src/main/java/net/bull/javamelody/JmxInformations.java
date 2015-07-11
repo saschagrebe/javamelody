@@ -71,7 +71,8 @@ class JmxInformations {
 				// add the defined labels to be used in the graphs
 				for (JmxObject nextObject : JMX_CONFIG.getObject()) {
 					for (JmxValue nextJmxValue : nextObject.getJmxValue()) {
-						final String counterName = counterName(nextObject, nextJmxValue);
+						final String counterName = nextJmxValue
+								.getCounterName(nextObject.getName());
 						I18N.addTranslation(counterName, nextJmxValue.getLabel());
 					}
 				}
@@ -97,7 +98,8 @@ class JmxInformations {
 					try {
 						final Object value = loadValue(beanServer, nextObject, nextValue);
 						if (value instanceof Number) {
-							final String counterName = counterName(nextObject, nextValue);
+							final String counterName = nextValue.getCounterName(nextObject
+									.getName());
 							final Number number = (Number) value;
 
 							information.add(new JmxInformation(counterName, number));
@@ -116,53 +118,16 @@ class JmxInformations {
 
 	private static Object loadValue(final MBeanServer beanServer, final JmxObject nextObject,
 			final JmxValue nextValue) throws MalformedObjectNameException {
+		// try loading the value
 		final ObjectName objectName = new ObjectName(nextObject.getName());
-		if (nextValue.getAttribute() == null || Boolean.TRUE.equals(nextValue.getAttribute())) {
-			try {
-				// try loading the value as attribute
-				final Object value = beanServer.getAttribute(objectName, nextValue.getName());
-				nextValue.setAttribute(true);
+		try {
+			return beanServer.getAttribute(objectName, nextValue.getName());
 
-				return value;
+		} catch (JMException e) {
+			LOG.warn("Could not collect jmx bean info", e);
 
-			} catch (JMException e) {
-				if (Boolean.TRUE.equals(nextValue.getAttribute())) {
-					LOG.warn("Could not collect jmx bean info", e);
-				} else {
-					LOG.info("Could not collect jmx bean info by attribute");
-				}
-			}
-		}
-		if (nextValue.getAttribute() == null || Boolean.FALSE.equals(nextValue.getAttribute())) {
-			try {
-				final Object value = beanServer.invoke(objectName, nextValue.getName(),
-						new Object[] {}, null);
-				nextValue.setAttribute(false);
-
-				return value;
-
-			} catch (JMException e) {
-				if (Boolean.FALSE.equals(nextValue.getAttribute())) {
-					LOG.warn("Could not collect jmx bean info", e);
-				} else {
-					LOG.info("Could not collect jmx bean info by method");
-				}
-			}
 		}
 
 		return null;
-	}
-
-	static String counterName(JmxObject nextObject, JmxValue nextValue) {
-		// need to strip all special signs because jrobin files are stored on file system and not every sign is allowed
-		return stripSpecialChars(nextObject.getName()) + "_"
-				+ stripSpecialChars(nextValue.getName());
-	}
-
-	private static String stripSpecialChars(String strValue) {
-		if (strValue == null) {
-			return "null";
-		}
-		return strValue.replace(".", "_").replaceAll("[^a-zA-Z0-9_]+", "");
 	}
 }
